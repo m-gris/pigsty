@@ -393,14 +393,21 @@ EOF
 function add_el89_repo(){
     local region=${1-"default"}
     local suffix=""
+    local epel_baseurl=""
+
+    # Set base URL for Rocky Linux repos
     if [ "${region}" = "china" ]; then
-      baseurl="https://mirrors.aliyun.com"
-      suffix=linux
+        baseurl="https://mirrors.aliyun.com"
+        epel_baseurl="${baseurl}"
+        suffix=linux
     elif [ "${region}" = "europe" ]; then
-      baseurl="https://mirrors.xtom.de"
+        baseurl="https://mirrors.xtom.de"
+        epel_baseurl="https://dl.fedoraproject.org/pub"
     else
-      baseurl="https://dl.rockylinux.org/pub"
+        baseurl="https://dl.rockylinux.org/pub"
+        epel_baseurl="https://dl.fedoraproject.org/pub"
     fi
+
     cat > "/tmp/el${releasever}.repo" <<-EOF
 [baseos-default]
 name = EL ${releasever} BaseOS \$releasever - \$basearch
@@ -409,6 +416,7 @@ gpgcheck = 0
 enabled = 1
 skip_if_unavailable = 1
 module_hotfixes=1
+
 [appstream-default]
 name = EL ${releasever} AppStream \$releasever - \$basearch
 baseurl = ${baseurl}/rocky${suffix}/\$releasever/AppStream/\$basearch/os/
@@ -416,17 +424,17 @@ gpgcheck = 0
 enabled = 1
 skip_if_unavailable = 1
 module_hotfixes=1
+
 [epel-default]
 name = EL ${releasever} EPEL \$releasever - \$basearch
-baseurl = ${baseurl}/epel/\$releasever/Everything/\$basearch/
+baseurl = ${epel_baseurl}/epel/\$releasever/Everything/\$basearch/
 gpgcheck = 0
 enabled = 1
 skip_if_unavailable = 1
 module_hotfixes=1
 EOF
-  sudo mv -f "/tmp/el${releasever}.repo" "/etc/yum.repos.d/el${releasever}.repo"
+    sudo mv -f "/tmp/el${releasever}.repo" "/etc/yum.repos.d/el${releasever}.repo"
 }
-
 
 # Usage: add_ubuntu_repo [region] (default|china|europe)
 function add_ubuntu_repo(){
