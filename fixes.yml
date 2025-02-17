@@ -19,6 +19,26 @@
 
     - name: Run fix_llvm_version script
       shell: /tmp/fix_llvm_version.sh
+      register: llvm_result
+      failed_when: llvm_result.rc != 0
+
+    - name: Show fix_llvm_version output
+      debug:
+        var: llvm_result.stdout_lines
 
     - name: Run fix_mirrors script
       shell: /tmp/fix_mirrors.sh
+      register: mirrors_result
+      failed_when: mirrors_result.rc != 0
+
+    - name: Show fix_mirrors output
+      debug:
+        var: mirrors_result.stdout_lines
+
+    - name: Verify both scripts succeeded
+      assert:
+        that:
+          - llvm_result.rc == 0
+          - mirrors_result.rc == 0
+        fail_msg: "One or more fix scripts failed"
+        success_msg: "All fix scripts completed successfully"
