@@ -1,0 +1,24 @@
+#!/usr/bin/env ansible-playbook
+---
+- name: PRE-INSTALL FIXES
+  become: yes
+  hosts: all
+  gather_facts: no
+  tasks:
+    - name: Copy fix_llvm_version script
+      copy:
+        src: fix_llvm_version.sh
+        dest: /tmp/fix_llvm_version.sh
+        mode: '0755'
+
+    - name: Copy fix_mirrors script
+      copy:
+        src: fix_mirrors.sh
+        dest: /tmp/fix_mirrors.sh
+        mode: '0755'
+
+    - name: Run fix_llvm_version script
+      shell: /tmp/fix_llvm_version.sh
+
+    - name: Run fix_mirrors script
+      shell: /tmp/fix_mirrors.sh
